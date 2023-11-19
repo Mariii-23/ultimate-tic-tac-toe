@@ -80,16 +80,16 @@ impl Board {
     }
 }
 
-struct JogoGalo{
+struct UltimateTicTacToe{
     board: [Board; 9],
     state: State,
     last_position: Option<usize>,
     // if true is player 1, else player 2
     player_turn: bool
 }
-impl JogoGalo {
-   pub fn build() -> JogoGalo{
-    JogoGalo { board: [Board::build(); 9], state: State::Empty, player_turn: true, last_position: None}
+impl UltimateTicTacToe {
+   pub fn build() -> UltimateTicTacToe{
+    UltimateTicTacToe { board: [Board::build(); 9], state: State::Empty, player_turn: true, last_position: None}
    }
 
    fn play_move(&mut self, tab: usize, position: usize) -> Result<(), Box<dyn Error>> {
@@ -222,19 +222,19 @@ impl JogoGalo {
                 for j in 0..3 {
                     for b in 0..3 {
                         match self.board[i * 3 + j].piece[a * 3 + b ] {
-                            State::Player1 => print!("X "),
-                            State::Player2 => print!("O "),
+                            State::Player1 => print!(" X "),
+                            State::Player2 => print!(" O "),
                             _ => {
                                 if self.board[i * 3 + j].state != State::Empty {
-                                    print!("  ")
+                                    print!(" - ")
                                 } else {
-                                    print!("* ")
+                                    print!("   ")
                                 }
                             },
                         }
 
                         if b != 2 {
-                            print!("| ");
+                            print!("|");
                         } else {
                             if j!= 2{
                                 print!("   ||   ");
@@ -246,14 +246,14 @@ impl JogoGalo {
 
                 println!();
                 if a != 2 {
-                    println!("   ---------   ||   ---------    ||   ---------");
+                    println!("   -----------   ||   -----------   ||   -----------");
                 }
             }
-            println!("               ||                ||");
+            println!("                 ||                 ||");
             if i != 2 {
-                println!("----------------------------------------------------");
-                println!("----------------------------------------------------");
-                println!("               ||                ||");
+                println!("-------------------------------------------------------------");
+                println!("-------------------------------------------------------------");
+                println!("                 ||                 ||");
             }
         }
     }
@@ -294,7 +294,7 @@ fn separate_numbers(input: &str) -> Option<(usize, usize)> {
 }
 
 fn main() {
-    let mut jogo_galo = JogoGalo::build();
+    let mut jogo_galo = UltimateTicTacToe::build();
     jogo_galo.run();
     jogo_galo.print_global_board();
 }

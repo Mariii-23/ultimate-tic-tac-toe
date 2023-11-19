@@ -1,0 +1,49 @@
+#+TITLE: Rust Tic Tac Toe - Ultimate Edition
+
+* Welcome
+  Welcome to the Ultimate Tic Tac Toe game written in Rust! This version of Tic Tac Toe adds a twist by introducing a large board, where each cell contains its own Tic Tac Toe mini-board.
+
+* How to Play
+
+** Objective
+   The goal of the game is to win the overall large board. However, in order to mark an 'X' or 'O' on the large board, a player must win the mini-board contained within that specific cell.
+
+** Rules
+
+1. Players take turns placing their 'X' or 'O' on a mini-board.
+2. The next player can only play in the cell of the large board that corresponds to the last move made in the mini-board by the previous player.
+   - However, if the mini-board corresponding to the last move is already in a winning or draw state, the current player is free to choose any available cell in the large board.
+3. To win the overall game, a player must win three mini-boards in a row horizontally, vertically, or diagonally on the large board.
+
+* How to Run
+
+To run the game, make sure you have Rust installed. Then, execute the following commands in your terminal:
+
+#+BEGIN_SRC bash
+# Clone the repository
+git clone https://github.com/Mariii-23/ultimate-tic-tac-toe
+
+# Navigate to the project directory
+cd ultimate-tic-tac-toe
+
+# Run the game
+cargo run
+#+END_SRC
+
+* Controls
+
+
+Use the keyboard to write your moves. The game will prompt you for input when it's your turn. Follow the on-screen instructions to make your move.
+
+The input format is as follows: **[large-board-position]-[ mini-board-position]**
+
+
+* Example Gameplay
+
+1. Player X makes a move in a mini-board cell, let's say 1-1.
+2. Player O must make their next move in the large board cell 1-2.
+3. The game continues until a player wins three mini-boards in a row on the large board.
+
+* Have Fun!
+
+Enjoy playing this unique version of Tic Tac Toe in Rust. May the best strategist win!
