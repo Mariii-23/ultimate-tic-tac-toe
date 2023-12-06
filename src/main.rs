@@ -1,6 +1,8 @@
 use std::error::Error;
 use std::io;
 
+const DEPTH: usize = 5;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum State {
     Empty,
@@ -80,6 +82,7 @@ impl Board {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq)]
 struct UltimateTicTacToe{
     board: [Board; 9],
     state: State,
@@ -191,6 +194,153 @@ impl UltimateTicTacToe {
         //println!("Winner :: {}", self.state);
     }
 
+    fn run_IA(&mut self) {
+        while self.state == State::Empty {
+           println!();
+           self.print_board(); 
+
+            if self.player_turn {
+                let mut input = String::new();
+                print!("Move = ");
+                use std::io::Write;
+                io::stdout().flush().unwrap();
+                io::stdin()
+                    .read_line(&mut input)
+                    .expect("Error reading the input");
+
+                match separate_numbers(&input) {
+                    Some((tab, position)) => {
+                         //TODO: Explain errors better
+                         if let Err(e) = self.play_move(tab - 1, position - 1) {
+                             println!("{}",e);
+                         }
+                    }
+                    None => println!("Wrong Input."),
+                }
+                println!();
+            } else {
+                let Ok((tab,best_move)) = self.best_move(self.last_position) else { todo!() };
+
+                if let Err(e) = self.play_move(tab, best_move ) {
+                    println!("{}",e);
+                }
+                println!();
+            }
+        }
+        //TODO:
+        //println!("Winner :: {}", self.state);
+    }
+
+    //TODO:
+    fn eval(&self) -> isize {
+
+        return 0;
+    }
+
+    fn minimax(&self, depth: usize, maximizing_player: bool, tab: usize) -> isize {
+        // let mut count = 0;
+        if depth == 0 {
+            match self.state {
+                State::Player1 => return 1,
+                State::Player2 => return -1,
+                State::Draw => return 0,
+                State::Empty => return self.eval(),
+            }
+        }
+
+        if self.state != State::Empty {
+            match self.state {
+                State::Player1 => return 1,
+                State::Player2 => return -1,
+                State::Draw => return 0,
+                _ => (),
+            }
+        }
+
+        if maximizing_player {
+            let mut max_eval = std::isize::MIN;
+                for j in 0..9 {
+                    // Simular jogada
+                    let mut new_board = self.clone();
+                    if let Err(_) = new_board.play_move(tab, j) {
+                        continue;
+                    }
+
+                    // Chamar recursivamente com a nova posição
+                    let eval = new_board.minimax(depth - 1, false, j);
+                    // count+=1;
+                    max_eval = max_eval.max(eval);
+                }
+            // println!("\n{}\n", count);
+            max_eval
+        } else {
+            let mut min_eval = std::isize::MAX;
+                for j in 0..9 {
+                    let mut new_board = self.clone();
+                    if let Err(_) = new_board.play_move(tab, j) {
+                        continue;
+                    }
+
+                    let eval = new_board.minimax(depth - 1, true, j);
+                    // count+=1;
+                    min_eval = min_eval.min(eval);
+                }
+            // println!("\n{}\n", count);
+            min_eval
+        }
+    }
+
+    fn best_move(&mut self, tab: Option<usize>) -> Result<(usize, usize), Box<dyn Error>> {
+        let mut best_val = std::isize::MIN;
+        let mut best_move = None;
+
+        match tab {
+            Some(tab) => {
+                for j in 0..9 {
+                    if self.board[tab].piece[j] == State::Empty {
+                        let mut new_board = self.clone();
+                        if let Err(_) = new_board.play_move(tab, j) {
+                            continue;
+                        }
+
+                        let move_val = new_board.minimax(DEPTH, false, j);
+
+                        if move_val > best_val {
+                            best_move = Some((tab, j));
+                            best_val = move_val;
+                        }
+                    }
+                }
+            },
+            None => {
+                for tab in 0..9 {
+                    for j in 0..9 {
+                        if self.board[tab].piece[j] == State::Empty {
+                            let mut new_board = self.clone();
+                            if let Err(_) = new_board.play_move(tab, j) {
+                                continue;
+                            }
+
+                            let move_val = new_board.minimax(DEPTH, false, j);
+
+                            if move_val > best_val {
+                                best_move = Some((tab, j));
+                                best_val = move_val;
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        if let Some((tab, position)) = best_move {
+            Ok((tab,position))
+        } else {
+            Err("No valid move found".into())
+        }
+    }
+
     fn print_global_board(&self) {
         for i in 0..3 {
             print!("                     ");
@@ -295,6 +445,6 @@ fn separate_numbers(input: &str) -> Option<(usize, usize)> {
 
 fn main() {
     let mut jogo_galo = UltimateTicTacToe::build();
-    jogo_galo.run();
+    jogo_galo.run_IA();
     jogo_galo.print_global_board();
 }
